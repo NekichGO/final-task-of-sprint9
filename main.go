@@ -20,7 +20,7 @@ func generateRandomElements(size int) []int {
 	}
 	nums := make([]int, 0, size)
 	for i := 0; i < size; i++ {
-		randomNum := rand.IntN(size)
+		randomNum := rand.Int()
 		nums = append(nums, randomNum)
 	}
 	return nums
@@ -45,14 +45,13 @@ func maximum(data []int) int {
 func maxChunks(data []int) int {
 	// ваш код здесь
 	var wg sync.WaitGroup
-	var mtx sync.Mutex
 
 	if len(data) <= 1 {
 		return 0
 	}
 	// Вычисляем размер среза
 	lenSlice := len(data) / CHUNKS
-	result := make([]int, 0, CHUNKS)
+	result := make([]int, CHUNKS)
 	for i := 0; i < CHUNKS; i++ {
 		start := i * lenSlice
 		end := start + lenSlice
@@ -63,9 +62,7 @@ func maxChunks(data []int) int {
 		go func(data []int) {
 			defer wg.Done()
 			maxNum := maximum(data)
-			mtx.Lock()
-			result = append(result, maxNum)
-			mtx.Unlock()
+			result[i] = maxNum
 		}(data[start:end])
 	}
 	wg.Wait()
